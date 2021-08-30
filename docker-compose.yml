@@ -8,9 +8,11 @@ services:
   # postgresql-db:
   #   service will be here
 
-  # django-backend:
-  #   service will be here
-
+  django-backend:
+    restart: always
+    build:
+      context: ./django-backend
+    image: djangobackend # name the resulted image: https://docs.docker.com/compose/compose-file/compose-file-v3/#build
   # certbot:
   #   service will be here
 
