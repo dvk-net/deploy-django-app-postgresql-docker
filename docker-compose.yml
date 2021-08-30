@@ -1,0 +1,18 @@
+version: "3.9"
+
+services: 
+
+  # nginx:
+  #   service will be here
+
+  # postgresql-db:
+  #   service will be here
+
+  # django-backend:
+  #   service will be here
+
+  # certbot:
+  #   service will be here
+
+# volumes: 
+#   not sure if needed at the moment...
