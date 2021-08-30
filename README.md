@@ -1,5 +1,5 @@
 # Video is comming soon...
-# deploy-django-app-postgressl-docker
+# deploy-django-app-postgresql-docker
 
 ![architecture diagram](deploy.png)
 
