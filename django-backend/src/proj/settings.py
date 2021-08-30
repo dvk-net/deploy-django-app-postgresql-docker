@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'deploy-db', # as a POSTGRES_DB
+        'USER': 'deploy-test-user', # as a POSTGRES_USER
+        'PASSWORD': 'deploy-test-password', # as a POSTGRES_PASSWORD
+        'HOST': 'postgresql-db', # as the DB's service name in docker-compose.yml
+        'PORT': '', # default
     }
 }
 

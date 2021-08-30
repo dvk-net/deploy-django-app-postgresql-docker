@@ -10,6 +10,9 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
 
 1. Create docker-compose.yaml
 1. Create templates for all the services
+
+## Create Django-service
+
 1. Create `django-backend` folder for relaited service
 1. Create the description of django service
 1. Create `Dockerfile` in `django-backend`
@@ -31,6 +34,7 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
     ```
 1. Ajust Dockerfile to build the image with django
 1. Try to run the service
+
     ```bash
     docker-compose up
     ```
@@ -42,5 +46,68 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
     django-backend_1  | [2021-08-30 08:30:20 +0000] [8] [INFO] Booting worker with pid: 8
     django-backend_1  | [2021-08-30 08:30:20 +0000] [9] [INFO] Booting worker with pid: 9
     django-backend_1  | [2021-08-30 08:30:20 +0000] [10] [INFO] Booting worker with pid: 10
+    ```
+## Create DB-service
+
+1. Ajust `docker-compose.yml` file
+1. Add `psycopg2-binary` to django requirements
+    ```
+    pip install -U psycopg2-binary
+    pip freeze > ./requirements.txt
+    ```
+1. Ajust django `settings.py` to use db-service as following:
+
+    ```python
+    # settings.py
+    # edit the following block
+    # exposing your passwords to github is not a good idea! Use import and gitignore
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'deploy-db', # as a POSTGRES_DB
+            'USER': 'deploy-test-user', # as a POSTGRES_USER
+            'PASSWORD': 'deploy-test-password', # as a POSTGRES_PASSWORD
+            'HOST': 'postgresql-db', # as the DB's service name in docker-compose.yml
+            'PORT': '', # default
+        }
+    }
+    ```
+1. Try to run both services:
+
+    ```bash
+    postgresql-db_1   | PostgreSQL init process complete; ready for start up.
+    postgresql-db_1   | 
+    postgresql-db_1   | 2021-08-30 10:38:43.954 UTC [1] LOG:  starting PostgreSQL 13.2 (Debian 13.2-1.pgdg100+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit
+    postgresql-db_1   | 2021-08-30 10:38:43.954 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+    postgresql-db_1   | 2021-08-30 10:38:43.954 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+    postgresql-db_1   | 2021-08-30 10:38:43.956 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+    postgresql-db_1   | 2021-08-30 10:38:43.959 UTC [75] LOG:  database system was shut down at 2021-08-30 10:38:43 UTC
+    postgresql-db_1   | 2021-08-30 10:38:43.962 UTC [1] LOG:  database system is ready to accept connections
+    ```
+    try to migrate: connect to django container and run:
+
+    ```sh
+    python manage.py migrate
+    Operations to perform:
+    Apply all migrations: admin, auth, contenttypes, sessions
+    Running migrations:
+    Applying contenttypes.0001_initial... OK
+    Applying auth.0001_initial... OK
+    Applying admin.0001_initial... OK
+    Applying admin.0002_logentry_remove_auto_add... OK
+    Applying admin.0003_logentry_add_action_flag_choices... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    Applying auth.0002_alter_permission_name_max_length... OK
+    Applying auth.0003_alter_user_email_max_length... OK
+    Applying auth.0004_alter_user_username_opts... OK
+    Applying auth.0005_alter_user_last_login_null... OK
+    Applying auth.0006_require_contenttypes_0002... OK
+    Applying auth.0007_alter_validators_add_error_messages... OK
+    Applying auth.0008_alter_user_username_max_length... OK
+    Applying auth.0009_alter_user_last_name_max_length... OK
+    Applying auth.0010_alter_group_name_max_length... OK
+    Applying auth.0011_update_proxy_permissions... OK
+    Applying auth.0012_alter_user_first_name_max_length... OK
+    Applying sessions.0001_initial... OK
     ```
 # To be continued...

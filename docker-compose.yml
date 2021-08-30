@@ -5,9 +5,13 @@ services:
   # nginx:
   #   service will be here
 
-  # postgresql-db:
-  #   service will be here
-
+  postgresql-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: deploy-test-user
+      POSTGRES_PASSWORD: deploy-test-password
+      POSTGRES_DB: deploy-db
+      # all vars are described here: https://hub.docker.com/_/postgres
   django-backend:
     restart: always
     build:
