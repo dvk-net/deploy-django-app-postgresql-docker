@@ -1,4 +1,4 @@
-# Video is comming soon...
+# [Video is comming soon...](https://www.youtube.com/channel/UCoBiDjX80JrNsFurVIuSaGA)
 # deploy-django-app-postgresql-docker
 
 ![architecture diagram](deploy.png)
