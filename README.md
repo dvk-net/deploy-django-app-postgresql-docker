@@ -110,4 +110,50 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
     Applying auth.0012_alter_user_first_name_max_length... OK
     Applying sessions.0001_initial... OK
     ```
+
+## Create NGINX-service
+
+1. Create folder `nginx`
+1. Create `Dockerfile` in it
+    ```docker
+    FROM nginx
+    # next line copies nginx configuration to the proxy-server
+    COPY ./default.conf /etc/nginx/conf.d/default.conf 
+    ```
+1. Create `default.conf` with `nginx` configurarion
+
+    ```nginx
+    upstream innerdjango {
+        server django-backend:8000;
+        # connection to the inner django-backend service
+        # here `django-backend` is the service's name in
+        # docker-compose.yml, it is resolved by docker to inner IP address.
+        # The `innerdjango` is just te name of upstream, used by nginx below. 
+    }
+    server {
+        # the connection to the outside world
+        # will be changed to incorporate cert's bot and ssl
+        # just to test it localy for now
+        listen 80; # port exposed to outside world. Needs to be opened in docker-compose.yml
+        # server_name example.com;
+        location / {
+            # where to redirect `/` requests
+            # to inner `innerdjango` upstream
+            proxy_pass http://innerdjango;
+        }
+    }
+    ```
+1. Test what's been done so far:
+    
+    1. Run docker-compose
+        ```bash
+        docker-compose up --build
+        ```
+    1. Navigate to [127.0.0.1](http://127.0.0.1) in your browser.
+    You must see something like this
+        ```
+        Invalid HTTP_HOST header: 'innerdjango'. You may need to add 'innerdjango' to ALLOWED_HOSTS.
+        ```
+    It's ok for now.
+    If you see it everything works...
 # To be continued...

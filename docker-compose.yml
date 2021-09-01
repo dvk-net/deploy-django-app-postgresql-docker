@@ -2,10 +2,15 @@ version: "3.9"
 
 services: 
 
-  # nginx:
-  #   service will be here
-
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+  
   postgresql-db:
+    restart: always
     image: postgres
     environment:
       POSTGRES_USER: deploy-test-user
