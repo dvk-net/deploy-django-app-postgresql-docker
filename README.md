@@ -156,4 +156,40 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
         ```
     It's ok for now.
     If you see it everything works...
+1. add `nginx/default.conf` to `.gitignore`
+1. comment in the string  `# server_name example.com;` and adjust the name to your domainname
+
+    ```nginx
+    upstream innerdjango {
+        server django-backend:8000;
+        # connection to the inner django-backend service
+        # here `django-backend` is the service's name in
+        # docker-compose.yml, it is resolved by docker to inner IP address.
+        # The `innerdjango` is just te name of upstream, used by nginx below. 
+    }
+    server {
+        # the connection to outside world
+        # will be changed to incorporate cert's bot and ssl
+        # just to test it localy for now
+        listen 80; # port exposed to outside world
+        server_name django-deploy.tk; # <-- here
+        location / {
+            # where to redirect `/` requests
+            # to inner `innerdjango` upstream
+            proxy_pass http://innerdjango;
+        }
+    }
+    ```
+1. Adjust django setting.py to your domain
+
+    ```python
+    DEBUG = False
+    ALLOWED_HOSTS = ['django-deploy.tk']
+    ```
+1. Try to bring up your services
+    ```bash
+    # git clone your project to a host
+    docker-compose up -build
+    ```
+
 # To be continued...
