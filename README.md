@@ -172,10 +172,12 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
         # will be changed to incorporate cert's bot and ssl
         # just to test it localy for now
         listen 80; # port exposed to outside world
-        server_name django-deploy.tk; # <-- here
+        server_name django-deploy.tk; # <-- here adjust to YOUR domain name
         location / {
             # where to redirect `/` requests
             # to inner `innerdjango` upstream
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $host;
             proxy_pass http://innerdjango;
         }
     }
@@ -183,13 +185,16 @@ Demo project to deploy to bare metal server (or any system) using docker, docker
 1. Adjust django setting.py to your domain
 
     ```python
-    DEBUG = False
-    ALLOWED_HOSTS = ['django-deploy.tk']
+    DEBUG = True # for now to see the welcome page. If you set it to False it would be more production ) but you will get boring 404 error
+    ALLOWED_HOSTS = ['django-deploy.tk'] # adjust to YOUR domain name here
     ```
 1. Try to bring up your services
     ```bash
     # git clone your project to a host
     docker-compose up -build
     ```
-
-# To be continued...
+1. Here Django almost running in production mode
+    1. Persistent data storage must be added
+    1. SSL certificate is needed
+![architecture diagram](django-is-running.png)
+# To be continued... We are getting closer to video tutorial...
