@@ -1,29 +1,37 @@
 version: "3.9"
 
-services: 
-
+services:
   nginx:
     restart: always
     build:
-      context: ./nginx
+        context: ./nginx
     ports:
-      - "80:80"
-  
-  postgresql-db:
-    restart: always
-    image: postgres
-    environment:
-      POSTGRES_USER: deploy-test-user
-      POSTGRES_PASSWORD: deploy-test-password
-      POSTGRES_DB: deploy-db
-      # all vars are described here: https://hub.docker.com/_/postgres
+      - "80:80" # port exposed to outside world.
+      - "443:443" # <--- add this line
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    volumes:
+      - ./persistentdata/certbot/conf:/etc/letsencrypt # <--here
+      - ./persistentdata/certbot/www:/var/www/certbot
+      - ./persistentdata/static:/var/www/static
+      - ./persistentdata/media:/var/www/media
   django-backend:
     restart: always
     build:
       context: ./django-backend
-    image: djangobackend # name the resulted image: https://docs.docker.com/compose/compose-file/compose-file-v3/#build
-  # certbot:
-  #   service will be here
-
-# volumes: 
-#   not sure if needed at the moment...
+    image: djangobackend
+    volumes:
+      - ./persistentdata/static:/var/www/static # <--here
+      - ./persistentdata/media:/var/www/media # <--here
+  postgresql-db:
+    restart: always
+    image: postgres
+    volumes:
+            - ./persistentdata/db:/var/lib/postgresql/data
+    env_file:
+      - ./postgresql-db/.pg-env # why - see the next step
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./persistentdata/certbot/conf:/etc/letsencrypt # <--here
+      - ./persistentdata/certbot/www:/var/www/certbot
