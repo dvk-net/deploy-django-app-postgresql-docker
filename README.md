@@ -1,4 +1,4 @@
-# [Video is comming soon...](https://www.youtube.com/c/КиберВесло)
+# [Video tutorial(RUS) ](https://youtu.be/9VYB58u664A)
 # deploy-django-app-postgresql-docker
 
 ![architecture diagram](deploy.png)
